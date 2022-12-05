@@ -70,7 +70,7 @@ func newStatusCmd(cfg *action.Configuration, out io.Writer) *cobra.Command {
 			// strip chart metadata from the output
 			rel.Chart = nil
 
-			return outfmt.Write(out, &statusPrinter{rel, false, client.ShowDescription})
+			return outfmt.Write(out, &statusPrinter{rel, false, client.ShowDescription, false})
 		},
 	}
 
@@ -99,6 +99,7 @@ type statusPrinter struct {
 	release         *release.Release
 	debug           bool
 	showDescription bool
+	skipNotes       bool
 }
 
 func (s statusPrinter) WriteJSON(out io.Writer) error {
@@ -173,7 +174,8 @@ func (s statusPrinter) WriteTable(out io.Writer) error {
 		fmt.Fprintf(out, "MANIFEST:\n%s\n", s.release.Manifest)
 	}
 
-	if len(s.release.Info.Notes) > 0 {
+	// Skip writing out notes - option in install and upgrades
+	if !s.skipNotes && len(s.release.Info.Notes) > 0 {
 		fmt.Fprintf(out, "NOTES:\n%s\n", strings.TrimSpace(s.release.Info.Notes))
 	}
 	return nil

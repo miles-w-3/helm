@@ -116,6 +116,7 @@ func newUpgradeCmd(cfg *action.Configuration, out io.Writer) *cobra.Command {
 					instClient.PostRenderer = client.PostRenderer
 					instClient.DisableOpenAPIValidation = client.DisableOpenAPIValidation
 					instClient.SubNotes = client.SubNotes
+					instClient.HideNotes = client.HideNotes
 					instClient.Description = client.Description
 					instClient.DependencyUpdate = client.DependencyUpdate
 
@@ -123,7 +124,7 @@ func newUpgradeCmd(cfg *action.Configuration, out io.Writer) *cobra.Command {
 					if err != nil {
 						return err
 					}
-					return outfmt.Write(out, &statusPrinter{rel, settings.Debug, false})
+					return outfmt.Write(out, &statusPrinter{rel, settings.Debug, false, instClient.HideNotes})
 				} else if err != nil {
 					return err
 				}
@@ -205,7 +206,7 @@ func newUpgradeCmd(cfg *action.Configuration, out io.Writer) *cobra.Command {
 				fmt.Fprintf(out, "Release %q has been upgraded. Happy Helming!\n", args[0])
 			}
 
-			return outfmt.Write(out, &statusPrinter{rel, settings.Debug, false})
+			return outfmt.Write(out, &statusPrinter{rel, settings.Debug, false, false})
 		},
 	}
 
@@ -229,6 +230,7 @@ func newUpgradeCmd(cfg *action.Configuration, out io.Writer) *cobra.Command {
 	f.IntVar(&client.MaxHistory, "history-max", settings.MaxHistory, "limit the maximum number of revisions saved per release. Use 0 for no limit")
 	f.BoolVar(&client.CleanupOnFail, "cleanup-on-fail", false, "allow deletion of new resources created in this upgrade when upgrade fails")
 	f.BoolVar(&client.SubNotes, "render-subchart-notes", false, "if set, render subchart notes along with the parent")
+	f.BoolVar(&client.SubNotes, "hide-notes", false, "if set, do not show notes in install output. Does not affect presence in chart metadata")
 	f.StringVar(&client.Description, "description", "", "add a custom description")
 	f.BoolVar(&client.DependencyUpdate, "dependency-update", false, "update dependencies if they are missing before installing the chart")
 	addChartPathOptionsFlags(f, &client.ChartPathOptions)
