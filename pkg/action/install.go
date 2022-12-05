@@ -90,6 +90,7 @@ type Install struct {
 	Atomic                   bool
 	SkipCRDs                 bool
 	SubNotes                 bool
+	HideNotes                bool
 	DisableOpenAPIValidation bool
 	IncludeCRDs              bool
 	// KubeVersion allows specifying a custom kubernetes version to use and
